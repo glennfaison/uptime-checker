@@ -50,8 +50,9 @@ const unifiedServer = (req, res) => {
     req.headers = req.headers ? req.headers : {}
     req.body = buffer ? buffer : {}
 
-    res.json = (data) => {
+    res.json = (data, status = 200) => {
       res.setHeader('content-type', 'application/json')
+      res.writeHead(status)
       return res.end(JSON.stringify(data))
     }
 
@@ -71,8 +72,8 @@ const unifiedServer = (req, res) => {
 }
 
 const handlers = {
-  sampleHandler: async (req, res) => {
-    res.json({ payload: 'Here\'s a sample response' })
+  pingHandler: async (req, res) => {
+    res.json({}, 200)
   },
   notFoundHandler: async (req, res) => {
     res.json('Resource was not found')
@@ -80,5 +81,5 @@ const handlers = {
 }
 
 const router = {
-  'sample': handlers.sampleHandler,
+  'ping': handlers.pingHandler,
 }
