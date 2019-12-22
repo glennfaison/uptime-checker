@@ -1,10 +1,33 @@
 const http = require('http')
+const https = require('https')
 const url = require('url')
-const StringDecoder = require('string_decoder').StringDecoder;
+const fs = require('fs')
+const StringDecoder = require('string_decoder').StringDecoder
 
 const env = require('./config')
 
-const server = http.createServer((req, res) => {
+const httpServer = http.createServer((req, res) => {
+  unifiedServer(req, res)
+})
+
+httpServer.listen(env.httpPort, () => {
+  console.log(`Application is listening on port ${env.httpPort}, in ${env.envName} mode`)
+})
+
+const httpsOptions = {
+  key: fs.readFileSync('./https/key.pem'),
+  cert: fs.readFileSync('./https/cert.pem'),
+}
+
+const httpsServer = https.createServer(httpsOptions, (req, res) => {
+  unifiedServer(req, res)
+})
+
+httpsServer.listen(env.httpsPort, () => {
+  console.log(`Application is listening on port ${env.httpsPort}, in ${env.envName} mode`)
+})
+
+const unifiedServer = (req, res) => {
 
   const decoder = new StringDecoder('utf-8')
   let buffer = ''
@@ -45,11 +68,7 @@ const server = http.createServer((req, res) => {
 
   })
 
-})
-
-server.listen(env.port, () => {
-  console.log(`Application is listening on port ${env.port}, in ${env.envName} mode`)
-})
+}
 
 const handlers = {
   sampleHandler: async (req, res) => {
