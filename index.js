@@ -1,12 +1,19 @@
-const http = require('http')
 const https = require('https')
 const url = require('url')
 const fs = require('fs')
-const StringDecoder = require('string_decoder').StringDecoder
 
+const { handlers } = require("./src/handlers")
 const env = require('./config')
+const Srvr = require('./lib/srvr')
+const requestbody = require('./lib/requestbody')
 
-const httpServer = http.createServer((req, res) => {
+
+
+const httpServer = new Srvr()
+httpServer.decorateWith((req, res) => {
+  requestbody(req, res)
+})
+httpServer.decorateWith((req, res) => {
   unifiedServer(req, res)
 })
 
@@ -29,26 +36,7 @@ httpsServer.listen(env.httpsPort, () => {
 
 const unifiedServer = (req, res) => {
 
-  const decoder = new StringDecoder('utf-8')
-  let buffer = ''
-
-  req.on('data', async (data) => {
-
-    buffer += decoder.write(data)
-
-  })
-
   req.on('end', async () => {
-
-    buffer += decoder.end()
-
-    const parsedUrl = url.parse(req.url, true)
-    const path = parsedUrl.pathname
-    const trimmedPath = path.replace(/^\/+|\/+$/g, '')
-    req.method = req.method.toUpperCase()
-    req.query = parsedUrl.query ? parsedUrl.query : {}
-    req.headers = req.headers ? req.headers : {}
-    req.body = buffer ? buffer : {}
 
     res.json = (data, status = 200) => {
       res.setHeader('content-type', 'application/json')
@@ -56,10 +44,9 @@ const unifiedServer = (req, res) => {
       return res.end(JSON.stringify(data))
     }
 
-    console.log(`Path: ${trimmedPath} with method: ${req.method}`)
-    console.log(`Query params: ${JSON.stringify(req.query)}`)
-    console.log(`Headers: ${JSON.stringify(req.headers)}`)
-    console.log(`Payload: ${JSON.stringify(req.body)}`)
+    const parsedUrl = url.parse(req.url, true)
+    const path = parsedUrl.pathname
+    const trimmedPath = path.replace(/^\/+|\/+$/g, '')
 
     if (!router[trimmedPath]) {
       handlers.notFoundHandler(req, res)
@@ -71,15 +58,7 @@ const unifiedServer = (req, res) => {
 
 }
 
-const handlers = {
-  pingHandler: async (req, res) => {
-    res.json({}, 200)
-  },
-  notFoundHandler: async (req, res) => {
-    res.json('Resource was not found')
-  },
-}
-
 const router = {
-  'ping': handlers.pingHandler,
+  'ping': handlers.ping,
+  'users': handlers.users,
 }
