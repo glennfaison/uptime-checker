@@ -11,7 +11,7 @@ env.production = {
   httpPort: 5000,
   httpsPort: 5001,
   envName: 'production',
-  hashingSecret: 'This is a secret'
+  hashingSecret: 'This is also a secret'
 }
 
 const currentEnv = !!process.env.NODE_ENV ? process.env.NODE_ENV.toLowerCase() : ''

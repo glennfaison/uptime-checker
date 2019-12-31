@@ -5,13 +5,14 @@ const helpers = require('./helpers')
 
 const userController = {}
 
-userController.get = async (req, res) => {
-  const firstName = req.body.firstName.trim()
-  const lastName = req.body.lastName.trim()
-  const phone = req.body.phone.trim()
-  const password = req.body.password.trim()
+userController.post = async (req, res) => {
+  const firstName = req.body.firstName ? req.body.firstName.trim() : undefined
+  const lastName = req.body.lastName ? req.body.lastName.trim() : undefined
+  const phone = req.body.phone ? req.body.phone.trim() : undefined
+  const password = req.body.password ? req.body.password.trim() : undefined
   const tosAgreement = req.body.tosAgreement || false
 
+  console.warn('Some properties are missing!')
   if (!firstName || !lastName || !password || !phone || !tosAgreement) {
     return res.json({ error: 'Missing required fields' }, 400)
   }
@@ -37,7 +38,7 @@ const handlers = {
   },
   users: async (req, res) => {
     const allowedMethods = ['GET', 'POST', 'PUT', 'DELETE']
-    if (!allowedMethods.includes(req.method.toUpperCase)) { return res.json({}, 405) }
+    if (!allowedMethods.includes(req.method.toUpperCase())) { return res.json({}, 405) }
     return userController[req.method.toLowerCase()](req, res)
   },
   notFoundHandler: async (req, res) => {

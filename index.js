@@ -3,19 +3,15 @@ const url = require('url')
 const fs = require('fs')
 
 const { handlers } = require("./src/handlers")
-const env = require('./config')
+const env = require('./src/config')
 const Srvr = require('./lib/srvr')
 const requestbody = require('./lib/requestbody')
 
 
 
-const httpServer = new Srvr()
-httpServer.decorateWith((req, res) => {
-  requestbody(req, res)
-})
-httpServer.decorateWith((req, res) => {
-  unifiedServer(req, res)
-})
+const httpServer = Srvr()
+httpServer.decorateWith((req, res) => { requestbody(req, res) })
+httpServer.decorateWith((req, res) => { unifiedServer(req, res) })
 
 httpServer.listen(env.httpPort, () => {
   console.log(`Application is listening on port ${env.httpPort}, in ${env.envName} mode`)
