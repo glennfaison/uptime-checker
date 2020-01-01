@@ -12,11 +12,15 @@ userController.post = async (req, res) => {
   const password = req.body.password ? req.body.password.trim() : undefined
   const tosAgreement = req.body.tosAgreement || false
 
-  console.warn('Some properties are missing!')
   if (!firstName || !lastName || !password || !phone || !tosAgreement) {
-    return res.json({ error: 'Missing required fields' }, 400)
+    return res.json({ error: `Missing required fields` }, 400)
   }
-  const read = await db.read('users', phone)
+  let read;
+  try {
+    read = await db.read('users', phone)
+  } catch (e) {
+    read = false
+  }
   if (read) {
     return res.json({ error: 'A user with the given phone number already exists' })
   }

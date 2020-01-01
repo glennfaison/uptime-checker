@@ -36,8 +36,8 @@ lib.read = async (dir, file) => {
     const data = fs.readFileSync(fullPath, 'utf-8')
     return data
   } catch (e) {
-    console.log('Error reading file')
-    throw e;
+    return null
+    // console.log('Error reading file')
   }
 }
 
