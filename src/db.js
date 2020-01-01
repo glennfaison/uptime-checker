@@ -32,13 +32,16 @@ lib.create = async (dir, file, data) => {
 
 lib.read = async (dir, file) => {
   const fullPath = path.join(lib.baseDir, dir, file + '.json')
+  let data = null
   try {
-    const data = fs.readFileSync(fullPath, 'utf-8')
-    return data
+    data = fs.readFileSync(fullPath, 'utf-8')
   } catch (e) {
+    console.log('Error reading file. File may not exist')
     return null
-    // console.log('Error reading file')
   }
+  try {
+    return JSON.parse(data)
+  } catch (e) { return null }
 }
 
 lib.update = async (dir, file, data) => {
