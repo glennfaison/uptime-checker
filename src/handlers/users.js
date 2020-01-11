@@ -1,5 +1,6 @@
-const db = require('./db')
-const helpers = require('./helpers')
+const db = require('../db')
+const helpers = require('../helpers')
+const tokenController = require('./tokens')
 
 
 
@@ -22,7 +23,7 @@ userController.post = async (req, res) => {
     read = false
   }
   if (read) {
-    return res.json({ error: 'A user with the given phone number already exists' })
+    return res.json({ error: 'A user with the given phone number already exists' }, 400)
   }
   const hashedPassword = helpers.hash(password)
   if (!hashedPassword) { return res.json({ error: 'Failed to hash password' }, 500) }
@@ -46,6 +47,13 @@ userController.post = async (req, res) => {
 userController.get = async (req, res) => {
   const phone = req.query.phone ? req.query.phone.toString().trim() : null
   if (!phone) { return res.json({ error: `Missing required field` }, 400) }
+  // Get the token from the headers
+  const token = req.headers.token
+  // Verify that the token belongs to this user
+  const tokenIsValid = await tokenController.verifyToken(token, phone)
+  if (!tokenIsValid) {
+    return res.json({ error: `Missing required token in header, or token is invalid` }, 403)
+  }
   const user = await db.read('users', phone)
   if (!user) { return res.json({}, 404) }
   delete user.hashedPassword
@@ -68,6 +76,13 @@ userController.put = async (req, res) => {
   const password = req.body.password ? req.body.password.trim() : undefined
 
   if (!firstName && !lastName && !password) { return res.json({ error: `Found no fields to update` }, 400) }
+  // Get the token from the headers
+  const token = req.headers.token
+  // Verify that the token belongs to this user
+  const tokenIsValid = await tokenController.verifyToken(token, phone)
+  if (!tokenIsValid) {
+    return res.json({ error: `Missing required token in header, or token is invalid` }, 403)
+  }
   const user = await db.read('users', phone)
   if (!user) { return res.json({ error: 'The specified user does not exist' }, 404) }
   
@@ -96,6 +111,13 @@ userController.put = async (req, res) => {
 userController.delete = async (req, res) => {
   const phone = req.query.phone ? req.query.phone.toString().trim() : null
   if (!phone) { return res.json({ error: `Missing required field` }, 400) }
+  // Get the token from the headers
+  const token = req.headers.token
+  // Verify that the token belongs to this user
+  const tokenIsValid = await tokenController.verifyToken(token, phone)
+  if (!tokenIsValid) {
+    return res.json({ error: `Missing required token in header, or token is invalid` }, 403)
+  }
   const user = await db.read('users', phone)
   if (!user) { return res.json({ error: 'Could not find the specified user' }, 404) }
   try {
@@ -106,18 +128,4 @@ userController.delete = async (req, res) => {
   }
 }
 
-const handlers = {
-  ping: async (req, res) => {
-    res.json({}, 200)
-  },
-  users: async (req, res) => {
-    const allowedMethods = ['GET', 'POST', 'PUT', 'DELETE']
-    if (!allowedMethods.includes(req.method.toUpperCase())) { return res.json({}, 405) }
-    return userController[req.method.toLowerCase()](req, res)
-  },
-  notFoundHandler: async (req, res) => {
-    res.json('Resource was not found', 404)
-  },
-}
-
-exports.handlers = handlers;
+module.exports = userController;
