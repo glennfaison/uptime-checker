@@ -9,6 +9,7 @@ const requestbody = require('./lib/requestbody')
 
 
 
+// Create an HTTP server
 const httpServer = Srvr()
 httpServer.decorateWith((req, res) => { requestbody(req, res) })
 httpServer.decorateWith((req, res) => { unifiedServer(req, res) })
@@ -22,6 +23,7 @@ const httpsOptions = {
   cert: fs.readFileSync('./https/cert.pem'),
 }
 
+// Create an HTTPS server
 const httpsServer = https.createServer(httpsOptions, (req, res) => {
   unifiedServer(req, res)
 })
@@ -34,12 +36,14 @@ const unifiedServer = (req, res) => {
 
   req.on('end', async () => {
 
+    // Function to end transmission on this stream and send response as JSON, with a status
     res.json = (data, status = 200) => {
       res.setHeader('content-type', 'application/json')
       res.writeHead(status)
       return res.end(JSON.stringify(data))
     }
 
+    // Send this request to the appropriate handler method
     const parsedUrl = url.parse(req.url, true)
     const path = parsedUrl.pathname
     const trimmedPath = path.replace(/^\/+|\/+$/g, '')
@@ -54,6 +58,7 @@ const unifiedServer = (req, res) => {
 
 }
 
+// Rudimentary routing for the application
 const router = {
   'ping': handlers.ping,
   'users': handlers.users,

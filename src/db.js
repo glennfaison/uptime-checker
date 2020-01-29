@@ -1,3 +1,5 @@
+// Rudimentary file-based DB.
+// TODO: replace with textdb
 const fs = require('fs')
 const path = require('path')
 
