@@ -1,5 +1,6 @@
 const userController = require('./users')
 const tokenController = require('./tokens')
+const checkController = require('./checks')
 
 
 
@@ -16,6 +17,11 @@ const handlers = {
     const allowedMethods = ['GET', 'POST', 'PUT', 'DELETE']
     if (!allowedMethods.includes(req.method.toUpperCase())) { return res.json({}, 405) }
     return tokenController[req.method.toLowerCase()](req, res)
+  },
+  checks: (req, res) => {
+    const allowedMethods = ['GET', 'POST', 'PUT', 'DELETE']
+    if (!allowedMethods.includes(req.method.toUpperCase())) { return res.json({}, 405) }
+    return checkController[req.method.toLowerCase()](req, res)
   },
   notFoundHandler: async (req, res) => {
     res.json('Resource was not found', 404)
