@@ -9,29 +9,6 @@ const requestbody = require('./lib/requestbody')
 
 
 
-// Create an HTTP server
-const httpServer = Srvr()
-httpServer.decorateWith((req, res) => { requestbody(req, res) })
-httpServer.decorateWith((req, res) => { unifiedServer(req, res) })
-
-httpServer.listen(env.httpPort, () => {
-  console.log(`Application is listening on port ${env.httpPort}, in ${env.envName} mode`)
-})
-
-const httpsOptions = {
-  key: fs.readFileSync('./https/key.pem'),
-  cert: fs.readFileSync('./https/cert.pem'),
-}
-
-// Create an HTTPS server
-const httpsServer = https.createServer(httpsOptions, (req, res) => {
-  unifiedServer(req, res)
-})
-
-httpsServer.listen(env.httpsPort, () => {
-  console.log(`Application is listening on port ${env.httpsPort}, in ${env.envName} mode`)
-})
-
 const unifiedServer = (req, res) => {
 
   req.on('end', async () => {
@@ -57,6 +34,29 @@ const unifiedServer = (req, res) => {
   })
 
 }
+
+// Create an HTTP server
+const httpServer = Srvr()
+httpServer.decorateWith((req, res) => requestbody(req, res))
+httpServer.decorateWith((req, res) => { unifiedServer(req, res) })
+
+httpServer.listen(env.httpPort, () => {
+  console.log(`Application is listening on port ${env.httpPort}, in ${env.envName} mode`)
+})
+
+const httpsOptions = {
+  key: fs.readFileSync('./https/key.pem'),
+  cert: fs.readFileSync('./https/cert.pem'),
+}
+
+// Create an HTTPS server
+const httpsServer = https.createServer(httpsOptions, (req, res) => {
+  unifiedServer(req, res)
+})
+
+httpsServer.listen(env.httpsPort, () => {
+  console.log(`Application is listening on port ${env.httpsPort}, in ${env.envName} mode`)
+})
 
 // Rudimentary routing for the application
 const router = {
