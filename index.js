@@ -66,4 +66,4 @@ const router = {
   'checks': handlers.checks,
 }
 
-httpServer.addRoute('/floor/:floorNumber/rooms/:roomNumber', 'get', (req, res) => console.log(req.params))
+httpServer.addRoute('/floor/:floorNumber/rooms/:roomNumber', 'put', (req, res) => console.log(req.params))
