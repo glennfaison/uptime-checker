@@ -25,11 +25,11 @@ const unifiedServer = (req, res) => {
     const path = parsedUrl.pathname
     const trimmedPath = path.replace(/^\/+|\/+$/g, '')
 
-    if (!router[trimmedPath]) {
-      handlers.notFoundHandler(req, res)
-      return
-    }
-    router[trimmedPath](req, res)
+    // if (!router[trimmedPath]) {
+    //   handlers.notFoundHandler(req, res)
+    //   return
+    // }
+    // router[trimmedPath](req, res)
 
   })
 
@@ -37,8 +37,8 @@ const unifiedServer = (req, res) => {
 
 // Create an HTTP server
 const httpServer = Srvr()
-httpServer.decorateWith((req, res) => requestbody(req, res))
-httpServer.decorateWith((req, res) => { unifiedServer(req, res) })
+httpServer.decorateWith(requestbody)
+httpServer.decorateWith(unifiedServer)
 
 httpServer.listen(env.httpPort, () => {
   console.log(`Application is listening on port ${env.httpPort}, in ${env.envName} mode`)
@@ -66,4 +66,6 @@ const router = {
   'checks': handlers.checks,
 }
 
-httpServer.addRoute('/floor/:floorNumber/rooms/:roomNumber', 'put', (req, res) => console.log(req.params))
+httpServer.addRoute('/floors/:floorNumber/rooms/:roomNumber', 'get', (req, res) => console.log(req.params))
+// httpServer.route('/floor/:floorNumber/rooms/:roomNumber')
+//   .get((req, res) => console.log(req.params))
