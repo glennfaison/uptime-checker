@@ -117,4 +117,4 @@ tokenController.verifyToken = async (tokenId, phone) => {
   return true
 }
 
-module.exports = tokenController;
+module.exports = tokenController

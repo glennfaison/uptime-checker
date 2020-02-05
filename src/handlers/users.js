@@ -128,4 +128,4 @@ userController.delete = async (req, res) => {
   }
 }
 
-module.exports = userController;
+module.exports = userController

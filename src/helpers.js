@@ -1,5 +1,5 @@
 const crypto = require('crypto')
-
+const db = require('./db')
 const config = require('./config')
 
 
@@ -20,6 +20,14 @@ helpers.createRandomString = len => {
     result += charList.charAt(Math.floor(Math.random() * charList.length))
   }
   return result
+}
+
+helpers.verifyToken = async (tokenId, phone) => {
+  let token = await db.read('tokens', tokenId)
+  if (!token) { return false }
+  // Check that the token belongs to the user, and is not expired
+  if (token.phone !== phone || token.expires < Date.now()) { return false }
+  return true
 }
 
 

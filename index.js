@@ -65,3 +65,5 @@ const router = {
   'tokens': handlers.tokens,
   'checks': handlers.checks,
 }
+
+httpServer.addRoute('/rooms/mine', 'get', () => console.log('romms/min'))

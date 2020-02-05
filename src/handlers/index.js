@@ -28,4 +28,4 @@ const handlers = {
   },
 }
 
-exports.handlers = handlers;
+exports.handlers = handlers
