@@ -52,6 +52,8 @@ lib.update = async (dir, file, data) => {
   let fullPath, fd, stringData;
   try {
     fullPath = path.join(lib.baseDir, dir, file + ".json");
+    // Empty the file
+    fs.truncateSync(fullPath, 0);
     fd = fs.openSync(fullPath, "r+");
     stringData = JSON.stringify(data);
   } catch (e) {

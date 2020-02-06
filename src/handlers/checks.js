@@ -79,7 +79,7 @@ checkController.get = async (req, res) => {
  * @param {*} res
  */
 checkController.put = async (req, res) => {
-  const id = req.query.id && req.query.id.trim().length === 20 ? req.query.id.toString().trim() : null;
+  const id = req.body.id && req.body.id.trim().length === 20 ? req.body.id.toString().trim() : null;
 
   const protocol = req.body.protocol && ["https", "http"].includes(req.body.protocol.trim().toLowerCase()) ? req.body.protocol.trim() : undefined;
   const url = req.body.url && req.body.url.trim().length > 0 ? req.body.url.trim() : undefined;
@@ -94,10 +94,23 @@ checkController.put = async (req, res) => {
   if (!protocol && !url && !method && !successCodes && !timeoutSeconds) { return res.json({ error: `Missing fields to update` }, 400); }
   const check = await db.read("checks", id)
     .catch(e => res.json({ error: `check ID did not exist` }, 400));
+  const tokenId = req.headers.token || null;
+  const authorized = await helpers.verifyToken(tokenId, check.userPhone).catch();
+  if (!authorized) { return res.json({ error: `Missing or invalid token` }, 403); }
+  // Update the check where necessary
+  if (protocol) { check.protocol = protocol; }
+  if (url) { check.url = url; }
+  if (method) { check.method = method; }
+  if (successCodes) { check.successCodes = successCodes; }
+  if (timeoutSeconds) { check.timeoutSeconds = timeoutSeconds; }
+  // Persist the update
+  await db.update("checks", id, check)
+    .catch(e => res.json({ error: `Failed to update check` }, 500));
+  return res.json(check, 200);
 };
 
 /**
- * Delete a @Token object.
+ * Delete a @Check object.
  * @required id
  * @optional none
  * @param {*} req
@@ -106,19 +119,23 @@ checkController.put = async (req, res) => {
 checkController.delete = async (req, res) => {
   const id = req.query.id ? req.query.id.toString().trim() : null;
   if (!id) { return res.json({ error: `Missing required field` }, 400); }
-  const token = await db.read("tokens", id);
-  if (!token) { return res.json({ error: "Could not find the specified token" }, 404); }
-  await db.delete("tokens", id)
-    .catch(e => res.json({ error: "Error while deleting the token." }, 500));
+  // Lookup the check
+  const check = await db.read("checks", id);
+  if (!check) { return res.json({ error: "Could not find the specified check" }, 404); }
+  // Verify that the sender of this request owns the check
+  const tokenId = req.headers.token;
+  const authorized = await helpers.verifyToken(tokenId, check.userPhone);
+  if (!authorized) { return res.json({ error: `You are not allowed to delete this check`}, 403); }
+  await db.delete("checks", id)
+    .catch(e => res.json({ error: "Error while deleting the check." }, 500));
+  // Lookup the user and remove reference to this check
+  const user = await db.read("users", check.userPhone)
+    .catch(e => res.json({ error: `Could not find the user of the check` }, 500));
+  user.checks = Array.isArray(user.checks) ? user.checks : [];
+  user.checks = user.checks.filter(i => i !== id); // Remove the check ID from the user's checks
+  await db.update("users", check.userPhone, user)
+    .catch(e => res.json({ error: `Could not update user` }, 500));
   return res.json({}, 200);
-};
-
-checkController.verifyToken = async (tokenId, phone) => {
-  let token = await db.read("tokens", tokenId);
-  if (!token) { return false; }
-  // Check that the token belongs to the user, and is not expired
-  if (token.phone !== phone || token.expires < Date.now()) { return false; }
-  return true;
 };
 
 module.exports = checkController;
