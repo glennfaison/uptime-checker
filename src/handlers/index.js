@@ -1,13 +1,11 @@
-const userController = require('./users')
-const tokenController = require('./tokens')
-const checkController = require('./checks')
-
-
+const userController = require("./users");
+const tokenController = require("./tokens");
+const checkController = require("./checks");
 
 const handlers = {
   users: userController,
   tokens: tokenController,
-  checks: checkController,
-}
+  checks: checkController
+};
 
-exports.handlers = handlers
+exports.handlers = handlers;
