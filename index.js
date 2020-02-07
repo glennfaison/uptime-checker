@@ -1,5 +1,3 @@
-const https = require("https");
-// const url = require("url");
 const fs = require("fs");
 
 const { handlers } = require("./src/handlers");
@@ -15,13 +13,13 @@ const httpsOptions = {
 };
 
 // Create an HTTPS server
-const httpsServer = https.createServer(httpsOptions, (req, res) => { });
+const httpsServer = Srvr("https", httpsOptions);
 
 httpsServer.listen(env.httpsPort, () => {
   console.log(`Application is listening on port ${env.httpsPort}, in ${env.envName} mode`);
 });
 
-
+/* Routing for the application */
 
 // Create an HTTP server
 const httpServer = Srvr();
