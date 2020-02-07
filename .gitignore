@@ -1,2 +1,5 @@
 .data
 .data/**
+
+# config.json files
+**.config.json

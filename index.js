@@ -5,15 +5,9 @@ const fs = require("fs");
 const { handlers } = require("./src/handlers");
 const env = require("./src/config");
 const Srvr = require("./lib/srvr");
+const twilight = require("./lib/twilight");
 
-const unifiedServer = (req, res) => { };
 
-// Create an HTTP server
-const httpServer = Srvr();
-
-httpServer.listen(env.httpPort, () => {
-  console.log(`Application is listening on port ${env.httpPort}, in ${env.envName} mode`);
-});
 
 const httpsOptions = {
   key: fs.readFileSync("./https/key.pem"),
@@ -21,12 +15,19 @@ const httpsOptions = {
 };
 
 // Create an HTTPS server
-const httpsServer = https.createServer(httpsOptions, (req, res) => {
-  unifiedServer(req, res);
-});
+const httpsServer = https.createServer(httpsOptions, (req, res) => { });
 
 httpsServer.listen(env.httpsPort, () => {
   console.log(`Application is listening on port ${env.httpsPort}, in ${env.envName} mode`);
+});
+
+
+
+// Create an HTTP server
+const httpServer = Srvr();
+
+httpServer.listen(env.httpPort, () => {
+  console.log(`Application is listening on port ${env.httpPort}, in ${env.envName} mode`);
 });
 
 /* Routing for the application */
@@ -55,3 +56,9 @@ httpServer
   .post(handlers.checks.post)
   .put(handlers.checks.put)
   .delete(handlers.checks.delete);
+
+
+// @TODO GET RID OF THIS!!!
+// twilight.sendSms("+237675611933", "Hi there!", res => {
+//   console.log(res);
+// });
