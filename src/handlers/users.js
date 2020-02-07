@@ -101,7 +101,7 @@ userController.put = async (req, res) => {
 
 /**
  * Delete a user's @User object. Only authenticated users can access this path.
- * @todo Delete any other data files associated with this user
+ * Delete any other data files associated with this user
  * @required phone
  * @optional none
  * @param {*} req
@@ -125,6 +125,12 @@ userController.delete = async (req, res) => {
   }
   await db.delete("users", phone)
     .catch(e => res.json({ error: "Error while deleting the user." }, 500));
+  // Delete this user's associations
+  // Delete the user's checks
+  const userChecks = Array.isArray(user.checks) ? user.checks : [];
+  const promises = userChecks.map(checkId => db.delete("checks", checkId));
+  await Promise.all(promises)
+    .catch(e => res.json({ error: `All this user's checks may not have been deleted successfully` }, 500));
   return res.json({}, 200);
 };
 
