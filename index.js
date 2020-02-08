@@ -1,12 +1,14 @@
-const server = require("./src/server");
+const servers = require("./src/servers");
+const workers = require("./src/workers");
 
 
 
 const app = {};
 
 app.init = () => {
-  server.init();
-}
+  servers.init();
+  workers.init();
+};
 
 app.init();
 

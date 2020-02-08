@@ -48,6 +48,17 @@ lib.read = async (dir, file) => {
   }
 };
 
+lib.list = async (dir) => {
+  const fullPath = path.join(lib.baseDir, dir);
+  let data = [];
+  try {
+    data = fs.readdirSync(fullPath);
+  } catch (e) {
+    console.log("Error reading folder. Folder may not exist");
+  }
+  return data.map(file => file.replace(".json", ""));
+};
+
 lib.update = async (dir, file, data) => {
   let fullPath, fd, stringData;
   try {

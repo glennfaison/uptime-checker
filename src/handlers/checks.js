@@ -12,12 +12,8 @@ const checkController = {};
  */
 checkController.post = async (req, res) => {
   // Validate the inputs
-  const protocol = req.body.protocol && ["https", "http"].includes(req.body.protocol.trim().toLowerCase()) ? req.body.protocol.trim() : undefined;
-  const url = req.body.url && req.body.url.trim().length > 0 ? req.body.url.trim() : undefined;
-  const method = req.body.method && ["get", "post", "put", "delete"].includes(req.body.method.trim().toLowerCase()) ? req.body.method.trim() : undefined;
-  const successCodes = Array.isArray(req.body.successCodes) && req.body.successCodes.length > 0 ? req.body.successCodes : undefined;
-  let timeoutSeconds = Number(req.body.timeoutSeconds);
-  timeoutSeconds = Math.floor(timeoutSeconds) === timeoutSeconds && timeoutSeconds >= 1 && timeoutSeconds <= 5 ? timeoutSeconds : null;
+  const checkData = helpers.validateCheckData({ ...req.body });
+  const { protocol, url, method, successCodes, timeoutSeconds } = checkData;
 
   // Stop the function if the right inputs are not provided
   if (!protocol || !url || !method || !successCodes || !timeoutSeconds) {
@@ -79,14 +75,8 @@ checkController.get = async (req, res) => {
  * @param {*} res
  */
 checkController.put = async (req, res) => {
-  const id = req.body.id && req.body.id.trim().length === 20 ? req.body.id.toString().trim() : null;
-
-  const protocol = req.body.protocol && ["https", "http"].includes(req.body.protocol.trim().toLowerCase()) ? req.body.protocol.trim() : undefined;
-  const url = req.body.url && req.body.url.trim().length > 0 ? req.body.url.trim() : undefined;
-  const method = req.body.method && ["get", "post", "put", "delete"].includes(req.body.method.trim().toLowerCase()) ? req.body.method.trim() : undefined;
-  const successCodes = Array.isArray(req.body.successCodes) && req.body.successCodes.length > 0 ? req.body.successCodes : undefined;
-  let timeoutSeconds = Number(req.body.timeoutSeconds);
-  timeoutSeconds = Math.floor(timeoutSeconds) === timeoutSeconds && timeoutSeconds >= 1 && timeoutSeconds <= 5 ? timeoutSeconds : null;
+  const checkData = helpers.validateCheckData({ ...req.body });
+  const { id, protocol, url, method, successCodes, timeoutSeconds } = checkData;
 
   // Check that the id field is valid
   if (!id) { return res.json({ error: `Missing required field` }, 400); }
