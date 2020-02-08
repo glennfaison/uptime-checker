@@ -39,7 +39,7 @@ helpers.validateCheckData = (check) => {
   const protocolRegExp = /^[^.]*:\/\//;
 
   check = typeof (check) === "object" && !!check ? check : {};
-  const { id, userPhone, protocol, url, method, successCodes, timeoutSeconds, state, lastChecked, ...props } = check;
+  let { id, userPhone, protocol, url, method, successCodes, timeoutSeconds, state, lastChecked, ...props } = check;
 
   id = typeof (id) === "string" && id.length === 20 ? id : "";
 
@@ -71,7 +71,7 @@ helpers.validateCheckData = (check) => {
 
 helpers.validateUserData = (user) => {
   if (!user) { return {}; }
-  const { id, firstName, lastName, phone, password, tosAgreement, checks, ...props } = user;
+  let { id, firstName, lastName, phone, password, tosAgreement, checks, ...props } = user;
 
   id = typeof (id) === "string" && id ? id.trim() : undefined;
   firstName = typeof (firstName) === "string" && firstName ? firstName.trim() : undefined;
