@@ -34,27 +34,27 @@ helpers.verifyToken = async (tokenId, phone) => {
 
 // Transform an object to valid check if possible
 helpers.validateCheckData = (check) => {
-  if (!check) { return false; }
+  if (!check) { return {}; }
   const acceptedMethods = ["GET", "POST", "PUT", "DELETE"];
   const protocolRegExp = /^[^.]*:\/\//;
 
   check = typeof (check) === "object" && !!check ? check : {};
   const { id, userPhone, protocol, url, method, successCodes, timeoutSeconds, state, lastChecked, ...props } = check;
-  
+
   id = typeof (id) === "string" && id.length === 20 ? id : "";
-  
+
   userPhone = typeof (userPhone) === "string" ? userPhone.trim() : "";
-  
-  protocol = typeof(protocol) === "string" ? protocol.trim().toLowerCase() : "";
+
+  protocol = typeof (protocol) === "string" ? protocol.trim().toLowerCase() : "";
   protocol = ["http", "https"].includes(protocol) ? protocol : "";
-  
+
   url = typeof (url) === "string" ? url.trim() : "";
   url = url.replace(protocolRegExp, "");
   url = !url.includes(" ") ? url : "";
-  
+
   method = typeof (method) === "string" ? method.trim().toUpperCase() : "";
   method = acceptedMethods.includes(method) ? method : "";
-  
+
   successCodes = Array.isArray(successCodes) && successCodes.length > 0 ? successCodes : false;
 
   timeoutSeconds = typeof (timeoutSeconds) === "number" ? Math.floor(timeoutSeconds) : 0;
@@ -68,5 +68,22 @@ helpers.validateCheckData = (check) => {
 
   return { id, userPhone, protocol, url, method, successCodes, timeoutSeconds, state, lastChecked, ...props };
 };
+
+helpers.validateUserData = (user) => {
+  if (!user) { return {}; }
+  const { id, firstName, lastName, phone, password, tosAgreement, checks, ...props } = user;
+
+  id = typeof (id) === "string" && id ? id.trim() : undefined;
+  firstName = typeof (firstName) === "string" && firstName ? firstName.trim() : undefined;
+  lastName = typeof (lastName) === "string" && lastName ? lastName.trim() : undefined;
+  phone = typeof (phone) === "string" && phone ? phone.trim() : undefined;
+  password = typeof (password) === "string" && password ? password.trim() : undefined;
+  tosAgreement = typeof (tosAgreement) === "boolean" ? tosAgreement : false;
+  checks = Array.isArray(checks) ? checks : [];
+
+  return { id, firstName, lastName, phone, password, tosAgreement, checks, ...props };
+};
+
+
 
 module.exports = helpers;

@@ -5,11 +5,8 @@ const tokenController = require("./tokens");
 const userController = {};
 
 userController.post = async (req, res) => {
-  const firstName = req.body.firstName ? req.body.firstName.trim() : undefined;
-  const lastName = req.body.lastName ? req.body.lastName.trim() : undefined;
-  const phone = req.body.phone ? req.body.phone.trim() : undefined;
-  const password = req.body.password ? req.body.password.trim() : undefined;
-  const tosAgreement = req.body.tosAgreement || false;
+  const userData = helpers.validateUserData({ ...req.body });
+  const { firstName, lastName, phone, password, tosAgreement } = userData;
 
   if (!firstName || !lastName || !password || !phone || !tosAgreement) {
     return res.json({ error: `Missing required fields` }, 400);
@@ -64,14 +61,12 @@ userController.get = async (req, res) => {
  * @param {*} res
  */
 userController.put = async (req, res) => {
-  const phone = req.body.phone ? req.body.phone.toString().trim() : null;
+  const userData = helpers.validateUserData({ ...req.body });
+  const { firstName, lastName, phone, password } = userData;
+  
   if (!phone) {
     return res.json({ error: `Missing required field` }, 400);
   }
-  const firstName = req.body.firstName ? req.body.firstName.trim() : undefined;
-  const lastName = req.body.lastName ? req.body.lastName.trim() : undefined;
-  const password = req.body.password ? req.body.password.trim() : undefined;
-
   if (!firstName && !lastName && !password) {
     return res.json({ error: `Found no fields to update` }, 400);
   }

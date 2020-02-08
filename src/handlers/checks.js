@@ -81,7 +81,9 @@ checkController.put = async (req, res) => {
   // Check that the id field is valid
   if (!id) { return res.json({ error: `Missing required field` }, 400); }
   // Make sure at least one of the other fields is sent
-  if (!protocol && !url && !method && !successCodes && !timeoutSeconds) { return res.json({ error: `Missing fields to update` }, 400); }
+  if (!protocol && !url && !method && !successCodes && !timeoutSeconds) {
+    return res.json({ error: `Missing fields to update` }, 400);
+  }
   const check = await db.read("checks", id)
     .catch(e => res.json({ error: `check ID did not exist` }, 400));
   const tokenId = req.headers.token || null;
