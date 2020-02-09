@@ -3,3 +3,9 @@
 
 # config.json files
 **.config.json
+
+# log files
+.logs
+.logs/**
+**.log
+**.gz.b64

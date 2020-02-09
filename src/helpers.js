@@ -58,7 +58,7 @@ helpers.validateCheckData = (check) => {
   successCodes = Array.isArray(successCodes) && successCodes.length > 0 ? successCodes : false;
 
   timeoutSeconds = typeof (timeoutSeconds) === "number" ? Math.floor(timeoutSeconds) : 0;
-  timeoutSeconds = timeoutSeconds >= 1 && timeoutSeconds <= 5 ? timeoutSeconds : false;
+  timeoutSeconds = timeoutSeconds >= 1 && timeoutSeconds <= 60 ? timeoutSeconds : false;
 
   // Set the keys that may not be set for checks this worker hasn't seen yet
   state = typeof (state) === "string" ? state.trim().toLowerCase() : "";

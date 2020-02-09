@@ -5,11 +5,21 @@ const https = require("https");
 const twilight = require("../lib/twilight");
 const db = require("./db");
 const helpers = require("./helpers");
+const logger = require("./logger");
 
 
 
 const workers = {};
-const checkInterval = 5000;
+const checkInterval = 1000 * 60; // 60,000 milliseconds === 1 minute
+
+workers.logCheckStatus = (check, outcome, state, alert, time) => {
+  const logString = JSON.stringify({check, outcome, state, alert, time});
+  const logFileName = check.id;
+  logger.append(logFileName, logString, err => {
+    if (err) { console.log(`Failure to log to file.`, err); }
+    else { console.log(`Logged to file successfully.`); }
+  });
+};
 
 // Transform an object to valid check if possible
 workers.validateCheckData = (check) => {
@@ -53,6 +63,8 @@ workers.processCheckOutcome = async (check, checkOutcome) => {
   // Save the check
   await db.update("checks", check.id, check)
     .catch(e => console.log(`Error updating check with id: ${check.id}`));
+
+  workers.logCheckStatus(check, checkOutcome, check.state, shouldAlert, check.lastChecked);
   // Send the new check data to the next phase
   if (!shouldAlert) {
     console.log(`Check state hasn't changed; no alert warranted`);
@@ -142,6 +154,11 @@ workers.init = () => {
   workers.runAllChecks(); // asynchronous function
   // Then execute the checks every `checkInterval` (milliseconds)
   setInterval(() => workers.runAllChecks(), checkInterval);
+
+  // Compress all currently uncompressed logs
+  logger.rotateDeflatedLogs(); // asynchronous function
+  // Compress uncompressed logs every 24 hours
+  setInterval(() => logger.rotateDeflatedLogs(), 1000 * 60 * 60 * 24);
 };
 
 

@@ -12,7 +12,7 @@ env.staging = {
   httpsPort: 3001,
   envName: "staging",
   hashingSecret: "This is a secret",
-  maxChecks: 5,
+  maxChecks: 25,
   twilio: {
     accountSid: twilioJson.accountSid,
     authToken: twilioJson.authToken,
@@ -26,7 +26,7 @@ env.production = {
   httpsPort: 5001,
   envName: "production",
   hashingSecret: "This is also a secret",
-  maxChecks: 5,
+  maxChecks: 25,
   twilio: {
     accountSid: twilioJson.accountSid,
     authToken: twilioJson.authToken,

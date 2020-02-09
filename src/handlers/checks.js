@@ -14,7 +14,7 @@ checkController.post = async (req, res) => {
   // Validate the inputs
   const checkData = helpers.validateCheckData({ ...req.body });
   const { protocol, url, method, successCodes, timeoutSeconds } = checkData;
-
+console.log(protocol, url, method, successCodes, timeoutSeconds)
   // Stop the function if the right inputs are not provided
   if (!protocol || !url || !method || !successCodes || !timeoutSeconds) {
     return res.json({ error: `Missing or invalid required fields` }, 400);

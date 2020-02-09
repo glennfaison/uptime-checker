@@ -51,6 +51,7 @@ servers.httpServer
 
 
 servers.init = () => {
+  process.on("uncaughtException", e => console.log(e));
   // Start the HTTP server
   servers.httpServer.listen(env.httpPort, () => {
     console.log(`Application is listening on port ${env.httpPort}, in ${env.envName} mode`);
