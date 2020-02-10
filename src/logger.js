@@ -41,7 +41,7 @@ logger.clearFile = async (source) => {
   } catch (e) { throw e; }
 };
 
-logger.compress = async (source, compressed) => {
+logger.compressFile = async (source, compressed) => {
   let str;
   try {
     str = fs.readFileSync(source, { encoding: "utf-8" });
@@ -68,6 +68,36 @@ logger.compress = async (source, compressed) => {
   } catch (e) { console.log(`Cannot close the file: ${compressed}`); }
 };
 
+logger.decompressFile = async (source, decompressed) => {
+  let str;
+  try {
+    str = fs.readFileSync(source, { encoding: "utf-8" });
+  } catch (e) {
+    console.log(`Could not read from the source file
+    ${source}`);
+    return;
+  }
+  let buffer = Buffer.from(str, "base64");
+  try {
+    buffer = zlib.unzipSync(buffer);
+  } catch (e) {
+    console.log(`Could not unzip source file`);
+    return;
+  }
+  let fd;
+  try {
+    fd = fs.openSync(decompressed, "w");
+    fs.truncateSync(decompressed, 0); // Empty the file
+  } catch (e) { console.log(`Could not create the destination file`); }
+  try {
+    console.log(fd);
+    fs.writeFileSync(fd, buffer.toString("utf-8"), { encoding: "utf-8" });
+  } catch (e) { console.log(`Could not write to destination file`); }
+  try {
+    fs.closeSync(fd);
+  } catch (e) { console.log(`Failed to close file: ${decompressed}`); }
+};
+
 logger.rotateLog = async (filename, compressedAt) => {
   const source = path.join(logger.baseDir, filename);
   const tmp = path.join(logger.baseDir, filename + ".tmp");
@@ -87,7 +117,7 @@ logger.rotateLog = async (filename, compressedAt) => {
   }
   // compress .tmp log file
   try {
-    await logger.compress(tmp, gzB64);
+    await logger.compressFile(tmp, gzB64);
   } catch (e) {
     console.log(`Error: Failed to compress:\n${tmp}`);
     return;
