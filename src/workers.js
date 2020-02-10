@@ -1,11 +1,13 @@
 const url = require("url");
 const http = require("http");
 const https = require("https");
+const util = require("util");
 
 const twilight = require("../lib/twilight");
 const db = require("./db");
 const helpers = require("./helpers");
 const logger = require("./logger");
+const debuglog = util.debuglog("workers");
 
 
 
@@ -16,8 +18,8 @@ workers.logCheckStatus = (check, outcome, state, alert, time) => {
   const logString = JSON.stringify({check, outcome, state, alert, time});
   const logFileName = check.id;
   logger.append(logFileName, logString, err => {
-    if (err) { console.log(`Failure to log to file.`, err); }
-    else { console.log(`Logged to file successfully.`); }
+    if (err) { debuglog(`Failure to log to file.`, err); }
+    else { debuglog(`Logged to file successfully.`); }
   });
 };
 
@@ -29,7 +31,7 @@ workers.validateCheckData = (check) => {
   if (id && userPhone && protocol && url && method && successCodes && timeoutSeconds) {
     return { id, userPhone, protocol, url, method, successCodes, timeoutSeconds, state, lastChecked };
   } else {
-    console.log(`Error: One of the checks is not properly formatted. Skipping it.`);
+    debuglog(`Error: One of the checks is not properly formatted. Skipping it.`);
     return false;
   }
 };
@@ -41,8 +43,8 @@ workers.alertUserToStatusChange = (check) => {
 
   is currently ${check.state}!`;
   twilight.sendSms(check.userPhone, msg, err => {
-    if (!err) { console.log(`Success! User was alerted to a change in check status via SMS.`); }
-    else { console.log(`Error: Could not send SMS to user with a change in check status.`); }
+    if (!err) { debuglog(`Success! User was alerted to a change in check status via SMS.`); }
+    else { debuglog(`Error: Could not send SMS to user with a change in check status.`); }
   });
 };
 
@@ -62,12 +64,12 @@ workers.processCheckOutcome = async (check, checkOutcome) => {
 
   // Save the check
   await db.update("checks", check.id, check)
-    .catch(e => console.log(`Error updating check with id: ${check.id}`));
+    .catch(e => debuglog(`Error updating check with id: ${check.id}`));
 
   workers.logCheckStatus(check, checkOutcome, check.state, shouldAlert, check.lastChecked);
   // Send the new check data to the next phase
   if (!shouldAlert) {
-    console.log(`Check state hasn't changed; no alert warranted`);
+    debuglog(`Check state hasn't changed; no alert warranted`);
     return;
   }
   // Alert user
@@ -137,12 +139,12 @@ workers.runAllChecks = async () => {
   // Find all checks
   let checkIds = [];
   checkIds = await db.list("checks").catch();
-  if (!checkIds.length) { console.log(`Could not find any checks to process`); }
+  if (!checkIds.length) { debuglog(`Could not find any checks to process`); }
 
   // Perform a check for each checkId
   checkIds.forEach(async id => {
     const originalCheck = await db.read("checks", id)
-      .catch(e => console.log(`Could not read check data for id: ${id}`));
+      .catch(e => debuglog(`Could not read check data for id: ${id}`));
     const validCheck = workers.validateCheckData(originalCheck);
     if (!validCheck) { return; }
     workers.runOneCheck(validCheck); // asynchronous function
@@ -150,6 +152,8 @@ workers.runAllChecks = async () => {
 };
 
 workers.init = () => {
+  // Send to console, in yellow
+  debuglog("\x1b[33m%s\x1b[0m", "Background workers are running", "HEKDKD");
   // Execute all checks immediately
   workers.runAllChecks(); // asynchronous function
   // Then execute the checks every `checkInterval` (milliseconds)

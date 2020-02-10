@@ -54,11 +54,11 @@ servers.init = () => {
   process.on("uncaughtException", e => console.log(e));
   // Start the HTTP server
   servers.httpServer.listen(env.httpPort, () => {
-    console.log(`Application is listening on port ${env.httpPort}, in ${env.envName} mode`);
+    console.log("\x1b[36m%s\x1b[0m", `Application is listening on port ${env.httpPort}, in ${env.envName} mode`);
   });
   // Start the HTTPS server
   servers.httpsServer.listen(env.httpsPort, () => {
-    console.log(`Application is listening on port ${env.httpsPort}, in ${env.envName} mode`);
+    console.log("\x1b[35m%s\x1b[0m", `Application is listening on port ${env.httpsPort}, in ${env.envName} mode`);
   });
 };
 

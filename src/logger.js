@@ -1,6 +1,9 @@
 const path = require("path");
 const fs = require("fs");
 const zlib = require("zlib");
+const util = require("util");
+
+const debuglog = util.debuglog("logger");
 
 
 
@@ -46,26 +49,26 @@ logger.compressFile = async (source, compressed) => {
   try {
     str = fs.readFileSync(source, { encoding: "utf-8" });
   } catch (e) {
-    console.log(`Cannot read log file: ${source}`);
+    debuglog(`Cannot read log file: ${source}`);
     return;
   }
   let buffer;
   try {
     buffer = zlib.gzipSync(str);
   } catch (e) {
-    console.log(`Cannot compress the data in: ${source}`);
+    debuglog(`Cannot compress the data in: ${source}`);
     return;
   }
   let fd;
   try {
     fd = fs.openSync(compressed, "wx");
-  } catch (e) { console.log(`Cannot create compressed log. It may already exist`); }
+  } catch (e) { debuglog(`Cannot create compressed log. It may already exist`); }
   try {
     fs.writeFileSync(fd, buffer.toString("base64"));
-  } catch (e) { console.log(`Cannot write to the compressed file`); }
+  } catch (e) { debuglog(`Cannot write to the compressed file`); }
   try {
     fs.closeSync(fd);
-  } catch (e) { console.log(`Cannot close the file: ${compressed}`); }
+  } catch (e) { debuglog(`Cannot close the file: ${compressed}`); }
 };
 
 logger.decompressFile = async (source, decompressed) => {
@@ -73,7 +76,7 @@ logger.decompressFile = async (source, decompressed) => {
   try {
     str = fs.readFileSync(source, { encoding: "utf-8" });
   } catch (e) {
-    console.log(`Could not read from the source file
+    debuglog(`Could not read from the source file
     ${source}`);
     return;
   }
@@ -81,21 +84,21 @@ logger.decompressFile = async (source, decompressed) => {
   try {
     buffer = zlib.unzipSync(buffer);
   } catch (e) {
-    console.log(`Could not unzip source file`);
+    debuglog(`Could not unzip source file`);
     return;
   }
   let fd;
   try {
     fd = fs.openSync(decompressed, "w");
     fs.truncateSync(decompressed, 0); // Empty the file
-  } catch (e) { console.log(`Could not create the destination file`); }
+  } catch (e) { debuglog(`Could not create the destination file`); }
   try {
-    console.log(fd);
+    debuglog(fd);
     fs.writeFileSync(fd, buffer.toString("utf-8"), { encoding: "utf-8" });
-  } catch (e) { console.log(`Could not write to destination file`); }
+  } catch (e) { debuglog(`Could not write to destination file`); }
   try {
     fs.closeSync(fd);
-  } catch (e) { console.log(`Failed to close file: ${decompressed}`); }
+  } catch (e) { debuglog(`Failed to close file: ${decompressed}`); }
 };
 
 logger.rotateLog = async (filename, compressedAt) => {
@@ -105,27 +108,27 @@ logger.rotateLog = async (filename, compressedAt) => {
   try {
     fs.copyFileSync(source, tmp);
   } catch (e) {
-    console.log(`Error: could not copy ${source}!`);
+    debuglog(`Error: could not copy ${source}!`);
     return;
   }
   // clear original log file
   try {
     await logger.clearFile(source);
   } catch (e) {
-    console.log(`Error: Failed to clear file:\n${source}`);
+    debuglog(`Error: Failed to clear file:\n${source}`);
     return;
   }
   // compress .tmp log file
   try {
     await logger.compressFile(tmp, gzB64);
   } catch (e) {
-    console.log(`Error: Failed to compress:\n${tmp}`);
+    debuglog(`Error: Failed to compress:\n${tmp}`);
     return;
   }
   // Delete the .tmp file
   try {
     await fs.unlinkSync(tmp);
-  } catch (e) { console.log(`Error: could not remove temporary file`, e); }
+  } catch (e) { debuglog(`Error: could not remove temporary file`, e); }
 }
 
 // Run compression on all deflated logs, then empty the deflated log
