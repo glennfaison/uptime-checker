@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 
 const { handlers } = require("./handlers");
 const env = require("./config");
@@ -48,6 +49,15 @@ servers.httpServer
   .put(handlers.checks.put)
   .delete(handlers.checks.delete);
 
+
+/* UI-related paths */
+// Serve all files in the `public` folder as static resources
+const publicFolder = path.resolve(path.join(__dirname, ".."), "public");
+servers.httpServer.serveStatic("/", publicFolder);
+
+servers.httpServer
+  .route("/")
+  .get(handlers.ui.index);
 
 
 servers.init = () => {
