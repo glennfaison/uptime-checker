@@ -8,6 +8,7 @@ uiHandler.basePath = path.join(__dirname, "../../public");
 
 uiHandler.index = async (req, res) => {
   const fullPath = path.join(uiHandler.basePath, "index.html");
+  res.setHeader("content-type", "text/html");
   let stream;
   try {
     stream = fs.createReadStream(fullPath, { encoding: "utf-8" });
