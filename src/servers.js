@@ -4,6 +4,8 @@ const path = require("path");
 const { handlers } = require("./handlers");
 const env = require("./config");
 const Srvr = require("../lib/srvr");
+const templatr = require("../lib/templatr");
+const config = require("./config");
 
 
 
@@ -58,6 +60,10 @@ servers.httpServer.serveStatic("/", publicFolder);
 servers.httpServer
   .route("/")
   .get(handlers.ui.index);
+
+
+templatr.appName = config.appName;
+templatr.appDescription = config.appDescription;
 
 
 servers.init = () => {
