@@ -12,7 +12,7 @@ const debuglog = util.debuglog("workers");
 
 
 const workers = {};
-const checkInterval = 1000 * 60; // 60,000 milliseconds === 1 minute
+const checkInterval = 1000 * 60 * 60; // 60,000 milliseconds === 1 minute
 
 workers.logCheckStatus = (check, outcome, state, alert, time) => {
   const logString = JSON.stringify({check, outcome, state, alert, time});
