@@ -1,23 +1,17 @@
-const fs = require("fs");
-const path = require("path");
+const templatr = require("../../lib/templatr");
 
 
 
 const uiHandler = {};
-uiHandler.basePath = path.join(__dirname, "../../public");
+
 
 uiHandler.index = async (req, res) => {
-  const fullPath = path.join(uiHandler.basePath, "index.html");
-  res.setHeader("content-type", "text/html");
-  let stream;
-  try {
-    stream = fs.createReadStream(fullPath, { encoding: "utf-8" });
-  } catch (e) {
-    res.writeHead(404);
-    return res.end("");
-  }
-  res.writeHead(200);
-  return stream.pipe(res);
+  
+  let str = await templatr.getTemplate("index.html", { appName: "Checks App", heading: "My heading"});
+  res.setHeader("Content-Type", "text/html");
+  res.writeHead(200, "OK");
+  return res.end(str);
+  
 };
 
 
