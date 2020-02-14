@@ -12,20 +12,16 @@
   <!-- <link type="shortcut icon" rel="icon" href="favicon.ico"> -->
   <link rel="stylesheet" type="text/css" href="styles/index.css">
 
-  <title>Hello World | {% appName %}</title>
+  <title>{% pageTitle %} | {% appName %}</title>
 </head>
 
-<body class="index">
+<body class="{% body.className %}">
 
   <div class="wrapper">
   
     {% renderTemplate("app-header.html") %}
   
-    <div class="content">
-      
-      {% renderTemplate("app-body.html") %}
-      
-    </div>
+    {% renderTemplate("app-body.html") %}
   
     {% renderTemplate("app-footer.html", { companyName: "me", to: "total", yearCreated: 2020 }) %}
 
