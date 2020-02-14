@@ -9,20 +9,20 @@ userController.post = async (req, res) => {
   const { firstName, lastName, phone, password, tosAgreement } = userData;
 
   if (!firstName || !lastName || !password || !phone || !tosAgreement) {
-    return res.json({ error: `Missing required fields` }, 400);
+    return res.setStatus(400).json({ error: `Missing required fields` });
   }
   let read = await db.read("users", phone).catch(e => read = false);
   if (read) {
-    return res.json({ error: "A user with the given phone number already exists" }, 400);
+    return res.setStatus(400).json({ error: "A user with the given phone number already exists" });
   }
   const hashedPassword = helpers.hash(password);
   if (!hashedPassword) {
-    return res.json({ error: "Failed to hash password" }, 500);
+    return res.setStatus(500).json({ error: "Failed to hash password" });
   }
   const userObj = { firstName, lastName, hashedPassword, phone, tosAgreement };
   db.create("users", phone, userObj)
-    .catch(e => res.json({ error: "Could not create user" }, 500));
-  return res.json({}, 200);
+    .catch(e => res.setStatus(500).json({ error: "Could not create user" }));
+  return res.setStatus(200).json();
 };
 
 /**
@@ -35,21 +35,21 @@ userController.post = async (req, res) => {
 userController.get = async (req, res) => {
   const phone = req.query.phone ? req.query.phone.toString().trim() : null;
   if (!phone) {
-    return res.json({ error: `Missing required field` }, 400);
+    return res.setStatus(400).json({ error: `Missing required field` });
   }
   // Get the token from the headers
   const token = req.headers.token;
   // Verify that the token belongs to this user
-  const tokenIsValid = await tokenController.verifyToken(token, phone);
+  const tokenIsValid = await helpers.verifyToken(token, phone);
   if (!tokenIsValid) {
-    return res.json({ error: `Missing required token in header, or token is invalid` }, 403);
+    return res.setStatus(403).json({ error: `Missing required token in header, or token is invalid` });
   }
   const user = await db.read("users", phone);
   if (!user) {
-    return res.json({}, 404);
+    return res.setStatus(404).json();
   }
   delete user.hashedPassword;
-  return res.json(user, 200);
+  return res.setStatus(200).json(user);
 };
 
 /**
@@ -65,21 +65,21 @@ userController.put = async (req, res) => {
   const { firstName, lastName, phone, password } = userData;
   
   if (!phone) {
-    return res.json({ error: `Missing required field` }, 400);
+    return res.setStatus(400).json({ error: `Missing required field` });
   }
   if (!firstName && !lastName && !password) {
-    return res.json({ error: `Found no fields to update` }, 400);
+    return res.setStatus(400).json({ error: `Found no fields to update` });
   }
   // Get the token from the headers
   const token = req.headers.token;
   // Verify that the token belongs to this user
-  const tokenIsValid = await tokenController.verifyToken(token, phone);
+  const tokenIsValid = await helpers.verifyToken(token, phone);
   if (!tokenIsValid) {
-    return res.json({ error: `Missing required token in header, or token is invalid` }, 403);
+    return res.setStatus(403).json({ error: `Missing required token in header, or token is invalid` });
   }
   const user = await db.read("users", phone);
   if (!user) {
-    return res.json({ error: "The specified user does not exist" }, 404);
+    return res.setStatus(404).json({ error: "The specified user does not exist" });
   }
 
   if (firstName) {
@@ -90,8 +90,8 @@ userController.put = async (req, res) => {
 
   // Persist modified user
   await db.update("users", phone, user)
-    .catch(e => res.json({ error: "Could not update the user" }, 500));
-  return res.json({}, 200);
+    .catch(e => res.setStatus(500).json({ error: "Could not update the user" }));
+  return res.setStatus(200).json();
 };
 
 /**
@@ -105,28 +105,28 @@ userController.put = async (req, res) => {
 userController.delete = async (req, res) => {
   const phone = req.query.phone ? req.query.phone.toString().trim() : null;
   if (!phone) {
-    return res.json({ error: `Missing required field` }, 400);
+    return res.setStatus(400).json({ error: `Missing required field` });
   }
   // Get the token from the headers
   const token = req.headers.token;
   // Verify that the token belongs to this user
-  const tokenIsValid = await tokenController.verifyToken(token, phone);
+  const tokenIsValid = await helpers.verifyToken(token, phone);
   if (!tokenIsValid) {
-    return res.json({ error: `Missing required token in header, or token is invalid` }, 403);
+    return res.setStatus(403).json({ error: `Missing required token in header, or token is invalid` });
   }
   const user = await db.read("users", phone);
   if (!user) {
-    return res.json({ error: "Could not find the specified user" }, 404);
+    return res.setStatus(404).json({ error: "Could not find the specified user" });
   }
   await db.delete("users", phone)
-    .catch(e => res.json({ error: "Error while deleting the user." }, 500));
+    .catch(e => res.setStatus(500).json({ error: "Error while deleting the user." }));
   // Delete this user's associations
   // Delete the user's checks
   const userChecks = Array.isArray(user.checks) ? user.checks : [];
   const promises = userChecks.map(checkId => db.delete("checks", checkId));
   await Promise.all(promises)
-    .catch(e => res.json({ error: `All this user's checks may not have been deleted successfully` }, 500));
-  return res.json({}, 200);
+    .catch(e => res.setStatus(500).json({ error: `All this user's checks may not have been deleted successfully` }));
+  return res.setStatus(200).json();
 };
 
 module.exports = userController;

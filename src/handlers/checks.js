@@ -17,17 +17,17 @@ checkController.post = async (req, res) => {
 console.log(protocol, url, method, successCodes, timeoutSeconds)
   // Stop the function if the right inputs are not provided
   if (!protocol || !url || !method || !successCodes || !timeoutSeconds) {
-    return res.json({ error: `Missing or invalid required fields` }, 400);
+    return res.setStatus(400).json({ error: `Missing or invalid required fields` });
   }
   // Get token from the headers
   const tokenId = req.headers.token || null;
-  const token = await db.read("tokens", tokenId).catch(e => res.json({}, 403));
+  const token = await db.read("tokens", tokenId).catch(e => res.setStatus(403).json());
   // Get the related user
-  const user = await db.read("users", token.phone).catch(e => res.json({}, 403));
+  const user = await db.read("users", token.phone).catch(e => res.setStatus(403).json());
   const userChecks = user.checks || [];
   // Verify that this user has less than the max number of `checks`
   if (userChecks.length >= config.maxChecks) {
-    return res.json({ error: `User already has the maximum number of checks (${config.maxChecks})` }, 403);
+    return res.setStatus(403).json({ error: `User already has the maximum number of checks (${config.maxChecks})` });
   }
   // Create a random id for the check
   const checkId = helpers.createRandomString(20);
@@ -38,13 +38,13 @@ console.log(protocol, url, method, successCodes, timeoutSeconds)
     protocol, url, method, successCodes, timeoutSeconds
   };
   await db.create("checks", checkId, check)
-    .catch(e => res.json({ error: `Could not create new check` }, 500));
+    .catch(e => res.setStatus(500).json({ error: `Could not create new check` }));
   // Add the checkId to the user object
   userChecks.push(checkId);
   user.checks = userChecks;
   await db.update("users", token.phone, user)
-    .catch(e => res.json({ error: `Could not update user with new check` }, 500));
-  return res.json(check, 200);
+    .catch(e => res.setStatus(500).json({ error: `Could not update user with new check` }));
+  return res.setStatus(200).json(check);
 };
 
 /**
@@ -57,14 +57,14 @@ console.log(protocol, url, method, successCodes, timeoutSeconds)
 checkController.get = async (req, res) => {
   // Check that the id is valid
   const id = req.query.id && req.query.id.trim().length === 20 ? req.query.id.trim() : null;
-  if (!id) { return res.json({ error: `Missing required field` }, 400); }
+  if (!id) { return res.setStatus(400).json({ error: `Missing required field` }); }
   // Lookup the check
   const check = await db.read("checks", id)
-    .catch(e => res.json({ error: `Could not read check data` }, 404));
+    .catch(e => res.setStatus(404).json({ error: `Could not read check data` }));
   const tokenId = req.headers.token || null;
   const authorized = await helpers.verifyToken(tokenId, check.userPhone).catch();
-  if (!authorized) { return res.json({ error: `Missing or invalid token` }, 403); }
-  return res.json(check, 200);
+  if (!authorized) { return res.setStatus(403).json({ error: `Missing or invalid token` }); }
+  return res.setStatus(200).json(check);
 };
 
 /**
@@ -79,16 +79,16 @@ checkController.put = async (req, res) => {
   const { id, protocol, url, method, successCodes, timeoutSeconds } = checkData;
 
   // Check that the id field is valid
-  if (!id) { return res.json({ error: `Missing required field` }, 400); }
+  if (!id) { return res.setStatus(400).json({ error: `Missing required field` }); }
   // Make sure at least one of the other fields is sent
   if (!protocol && !url && !method && !successCodes && !timeoutSeconds) {
-    return res.json({ error: `Missing fields to update` }, 400);
+    return res.setStatus(400).json({ error: `Missing fields to update` });
   }
   const check = await db.read("checks", id)
-    .catch(e => res.json({ error: `check ID did not exist` }, 400));
+    .catch(e => res.setStatus(400).json({ error: `check ID did not exist` }));
   const tokenId = req.headers.token || null;
   const authorized = await helpers.verifyToken(tokenId, check.userPhone).catch();
-  if (!authorized) { return res.json({ error: `Missing or invalid token` }, 403); }
+  if (!authorized) { return res.setStatus(403).json({ error: `Missing or invalid token` }); }
   // Update the check where necessary
   if (protocol) { check.protocol = protocol; }
   if (url) { check.url = url; }
@@ -97,8 +97,8 @@ checkController.put = async (req, res) => {
   if (timeoutSeconds) { check.timeoutSeconds = timeoutSeconds; }
   // Persist the update
   await db.update("checks", id, check)
-    .catch(e => res.json({ error: `Failed to update check` }, 500));
-  return res.json(check, 200);
+    .catch(e => res.setStatus(500).json({ error: `Failed to update check` }));
+  return res.setStatus(200).json(check);
 };
 
 /**
@@ -110,24 +110,24 @@ checkController.put = async (req, res) => {
  */
 checkController.delete = async (req, res) => {
   const id = req.query.id ? req.query.id.toString().trim() : null;
-  if (!id) { return res.json({ error: `Missing required field` }, 400); }
+  if (!id) { return res.setStatus(400).json({ error: `Missing required field` }); }
   // Lookup the check
   const check = await db.read("checks", id);
-  if (!check) { return res.json({ error: "Could not find the specified check" }, 404); }
+  if (!check) { return res.setStatus(404).json({ error: "Could not find the specified check" }); }
   // Verify that the sender of this request owns the check
   const tokenId = req.headers.token;
   const authorized = await helpers.verifyToken(tokenId, check.userPhone);
-  if (!authorized) { return res.json({ error: `You are not allowed to delete this check`}, 403); }
+  if (!authorized) { return res.setStatus(403).json({ error: `You are not allowed to delete this check`}); }
   await db.delete("checks", id)
-    .catch(e => res.json({ error: "Error while deleting the check." }, 500));
+    .catch(e => res.setStatus(500).json({ error: "Error while deleting the check." }));
   // Lookup the user and remove reference to this check
   const user = await db.read("users", check.userPhone)
-    .catch(e => res.json({ error: `Could not find the user of the check` }, 500));
+    .catch(e => res.setStatus(500).json({ error: `Could not find the user of the check` }));
   user.checks = Array.isArray(user.checks) ? user.checks : [];
   user.checks = user.checks.filter(i => i !== id); // Remove the check ID from the user's checks
   await db.update("users", check.userPhone, user)
-    .catch(e => res.json({ error: `Could not update user` }, 500));
-  return res.json({}, 200);
+    .catch(e => res.setStatus(500).json({ error: `Could not update user` }));
+  return res.setStatus(200).json();
 };
 
 module.exports = checkController;

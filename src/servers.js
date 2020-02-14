@@ -27,25 +27,25 @@ servers.httpServer = Srvr();
 /* Routing for the application */
 servers.httpServer.route("ping/:id").get((req, res) => {
   console.log(req.params, req.query, req.body);
-  res.json({}, 200);
+  res.setStatus(200).json();
 });
 
 servers.httpServer
-  .route("users")
+  .route("api/v1/users")
   .get(handlers.users.get)
   .post(handlers.users.post)
   .put(handlers.users.put)
   .delete(handlers.users.delete);
 
 servers.httpServer
-  .route("tokens")
+  .route("api/v1/tokens")
   .get(handlers.tokens.get)
   .post(handlers.tokens.post)
   .put(handlers.tokens.put)
   .delete(handlers.tokens.delete);
 
 servers.httpServer
-  .route("checks")
+  .route("api/v1/checks")
   .get(handlers.checks.get)
   .post(handlers.checks.post)
   .put(handlers.checks.put)
@@ -57,9 +57,15 @@ servers.httpServer
 const publicFolder = path.resolve(path.join(__dirname, ".."), "public");
 servers.httpServer.serveStatic("/", publicFolder);
 
-servers.httpServer
-  .route("/")
-  .get(handlers.ui.index);
+servers.httpServer.route("/").get(handlers.ui.index);
+servers.httpServer.route("/account/create").get(handlers.ui.index);
+servers.httpServer.route("/account/edit").get(handlers.ui.index);
+servers.httpServer.route("/account/deleted").get(handlers.ui.index);
+servers.httpServer.route("/session/create").get(handlers.ui.index);
+servers.httpServer.route("/session/deleted").get(handlers.ui.index);
+servers.httpServer.route("/checks/all").get(handlers.ui.index);
+servers.httpServer.route("/checks/create").get(handlers.ui.index);
+servers.httpServer.route("/checks/edit").get(handlers.ui.index);
 
 
 templatr.appName = config.appName;
