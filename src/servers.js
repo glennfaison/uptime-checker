@@ -3,9 +3,7 @@ const path = require("path");
 
 const { handlers } = require("./handlers");
 const env = require("./config");
-const Srvr = require("../lib/srvr");
-const templatr = require("../lib/templatr");
-const config = require("./config");
+const Srvr = require("../lib/srvr")
 
 
 
@@ -58,18 +56,15 @@ const publicFolder = path.resolve(path.join(__dirname, ".."), "public");
 servers.httpServer.serveStatic("/", publicFolder);
 
 servers.httpServer.route("/").get(handlers.ui.index);
-servers.httpServer.route("/account/create").get(handlers.ui.index);
-servers.httpServer.route("/account/edit").get(handlers.ui.index);
-servers.httpServer.route("/account/deleted").get(handlers.ui.index);
-servers.httpServer.route("/session/create").get(handlers.ui.index);
-servers.httpServer.route("/session/deleted").get(handlers.ui.index);
-servers.httpServer.route("/checks/all").get(handlers.ui.index);
-servers.httpServer.route("/checks/create").get(handlers.ui.index);
-servers.httpServer.route("/checks/edit").get(handlers.ui.index);
+servers.httpServer.route("/account/create").get(handlers.ui.accountCreate);
+servers.httpServer.route("/account/edit").get(handlers.ui.accountEdit);
+servers.httpServer.route("/account/deleted").get(handlers.ui.accountDeleted);
+servers.httpServer.route("/session/create").get(handlers.ui.sessionCreate);
+servers.httpServer.route("/session/deleted").get(handlers.ui.sessionDeleted);
+servers.httpServer.route("/checks/all").get(handlers.ui.checkList);
+servers.httpServer.route("/checks/create").get(handlers.ui.checkCreate);
+servers.httpServer.route("/checks/edit").get(handlers.ui.checkEdit);
 
-
-templatr.appName = config.appName;
-templatr.appDescription = config.appDescription;
 
 
 servers.init = () => {

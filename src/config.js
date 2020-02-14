@@ -19,8 +19,6 @@ env.staging = {
     fromPhone: twilioJson.fromPhone,
     hostName: "api.twilio.com",
   },
-  appName: "Uptime Checker",
-  appDescription: "We offer free, simple uptime monitoring for HTTP and HTTPS sites of all kinds. When your site goes down, we'll send you a text to let you know!",
 };
 
 env.production = {
@@ -35,8 +33,6 @@ env.production = {
     fromPhone: twilioJson.fromPhone,
     hostName: "api.twilio.com",
   },
-  appName: "Uptime Checker",
-  appDescription: "We offer free, simple uptime monitoring for HTTP and HTTPS sites of all kinds. When your site goes down, we'll send you a text to let you know!",
 };
 
 const currentEnv = !!process.env.NODE_ENV ? process.env.NODE_ENV.toLowerCase() : "";

@@ -7,21 +7,21 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <meta http-equiv="content-language" content="en-us">
   <!-- <base href="/public/" /> -->
-  <meta name="description" content="{% appDescription %}">
+  <meta name="description" content="{% head.description %}">
   <link type="image/x-icon" rel="icon" href="favicon.ico">
   <!-- <link type="shortcut icon" rel="icon" href="favicon.ico"> -->
   <link rel="stylesheet" type="text/css" href="styles/index.css">
 
-  <title>{% pageTitle %} | {% appName %}</title>
+  <title>{% appName %} | {% head.title %}</title>
 </head>
 
-<body class="{% body.className %}">
+<body class="{% body.class %}">
 
   <div class="wrapper">
   
     {% renderTemplate("app-header.html") %}
   
-    {% renderTemplate("app-body.html") %}
+    {% renderTemplate("app-body.html", { body: { description: "{% body.description %}" } }) %}
   
     {% renderTemplate("app-footer.html", { companyName: "me", to: "total", yearCreated: 2020 }) %}
 
