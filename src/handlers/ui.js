@@ -31,7 +31,8 @@ uiHandler.accountCreate = async (req, res) => {
   data.head.description = "Signup is easy and only takes a few seconds";
   data.body.class = "accountCreate";
 
-  let str = templatr.renderTemplate("index.html", data);
+  let str = templatr.renderTemplate("accountCreate.html", data);
+  console.log("str:", str)
   res.setHeader("Content-Type", "text/html");
   res.writeHead(200, "OK");
   return res.end(str);
