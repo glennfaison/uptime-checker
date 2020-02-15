@@ -61,9 +61,9 @@ servers.httpServer.route("/account/edit").get(handlers.ui.accountEdit);
 servers.httpServer.route("/account/deleted").get(handlers.ui.accountDeleted);
 servers.httpServer.route("/session/create").get(handlers.ui.sessionCreate);
 servers.httpServer.route("/session/deleted").get(handlers.ui.sessionDeleted);
-servers.httpServer.route("/checks/all").get(handlers.ui.checkList);
-servers.httpServer.route("/checks/create").get(handlers.ui.checkCreate);
-servers.httpServer.route("/checks/edit").get(handlers.ui.checkEdit);
+servers.httpServer.route("/checks/all").get(handlers.ui.checksList);
+servers.httpServer.route("/checks/create").get(handlers.ui.checksCreate);
+servers.httpServer.route("/checks/edit").get(handlers.ui.checksEdit);
 
 
 

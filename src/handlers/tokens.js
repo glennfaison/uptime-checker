@@ -61,13 +61,13 @@ tokenController.get = async (req, res) => {
  * @param {*} res
  */
 tokenController.put = async (req, res) => {
-  const id = req.query.id ? req.query.id.toString().trim() : null;
+  const id = req.body.id ? req.body.id.toString().trim() : null;
   if (!id) {
     return res.setStatus(400).json({ error: `Missing required field` });
   }
   let extend = false;
   try {
-    extend = JSON.parse(req.query.extend);
+    extend = JSON.parse(req.body.extend);
   } catch (e) { extend = false; }
 
   if (!id || !extend) {

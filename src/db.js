@@ -38,7 +38,7 @@ lib.read = async (dir, file) => {
   try {
     data = fs.readFileSync(fullPath, "utf-8");
   } catch (e) {
-    console.log("Error reading file. File may not exist");
+    console.log(`Error reading file: ${fullPath}. File may not exist`);
     return null;
   }
   try {

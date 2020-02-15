@@ -6,16 +6,18 @@ export function objectToQueryString(obj) {
 }
 
 export function queryStringToObject(qs) {
+  if (!qs) { return {}; }
   qs = decodeURIComponent(qs)
   const entries = qs.split("&").map(i => i.split("="));
   return Object.fromEntries(entries);
 }
 
 export function getQueryFromUrl(url) {
-  return url.match(/\?(.*)/)[1];
+  let match = url.match(/\?(.*)/);
+  return match ? match[1] : "";
 }
 
-export async function createRequest(method, url, query, body, headers) {
+function _createRequest(method, url, query, body, headers, callback) {
   // Attempt to validate arguments
   method = typeof(method) === "string" ? method : "GET";
   url = typeof(url) === "string" ? url : "/";
@@ -46,18 +48,29 @@ export async function createRequest(method, url, query, body, headers) {
   xhr.onreadystatechange = () => {
     if (xhr.readyState === xhr.DONE) {
       if (xhr.status) {
-        response.status = { code: xhr.status, message: xhr.statusText };
+        response.statusCode =  xhr.status;
+        response.message = xhr.statusText;
       }
       if (xhr.responseText) {
-        response.data = JSON.parse(xhr.responseText);
-      };
+        try {
+          response.data = JSON.parse(xhr.responseText);
+        } catch (e) { response.data = xhr.responseText; }
+      }
+      callback(response);
     }
-
-    return response;
   };
 
   // Send the request
   xhr.send(JSON.stringify(body));
+}
+
+export async function createRequest(method, url, query, body, headers) {
+  return new Promise((resolve, reject) => {
+    _createRequest(method, url, query, body, headers, (res) => {
+      if (res.error) { reject(res); }
+      else { resolve(res); }
+    });
+  });
 }
 
 export async function get(url, query, headers) {
