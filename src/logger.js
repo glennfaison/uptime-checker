@@ -87,6 +87,9 @@ logger.decompressFile = async (source, decompressed) => {
     debuglog(`Could not unzip source file`);
     return;
   }
+  if (!decompressed) {
+    return buffer.toString("utf-8");
+  }
   let fd;
   try {
     fd = fs.openSync(decompressed, "w");
