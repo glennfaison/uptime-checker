@@ -88,7 +88,8 @@ logger.decompressFile = async (source, decompressed) => {
     return;
   }
   if (!decompressed) {
-    return buffer.toString("utf-8");
+    let resultStr = buffer.toString("utf-8");
+    return resultStr;
   }
   let fd;
   try {
