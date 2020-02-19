@@ -1,4 +1,4 @@
-const litmus = require("./litmus");
+const litmus = require("../lib/litmus");
 const logger = require("../src/logger");
 const assert = require("assert");
 const path = require("path");
@@ -32,6 +32,20 @@ litmus.testThat(
     objects = objects.map(i => JSON.parse(i));
     try {
       objects.forEach(i => assert.equal(typeof (i), "object"));
+    } catch (e) {
+      failureHandler(e);
+      return;
+    }
+    successHandler();
+  });
+
+litmus.testThat(
+  "logger.listLogFilenames returns an array of strings",
+  async (failureHandler, successHandler) => {
+    try {
+      let logFileNames = await logger.listLogFilenames(false);
+      assert.ok(Array.isArray(logFileNames));
+      assert.equal(typeof(logFileNames[0]), "string");
     } catch (e) {
       failureHandler(e);
       return;

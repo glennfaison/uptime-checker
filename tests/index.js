@@ -1,4 +1,4 @@
-const litmus = require("./litmus");
+const litmus = require("../lib/litmus");
 require("./logger");
 
 
