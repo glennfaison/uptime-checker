@@ -7,6 +7,20 @@ twilioJson = JSON.parse(twilioJson);
 
 const env = {};
 
+env.testing = {
+  httpPort: 4000,
+  httpsPort: 4001,
+  envName: "testing",
+  hashingSecret: "This is a secret",
+  maxChecks: 25,
+  twilio: {
+    accountSid: twilioJson.accountSid,
+    authToken: twilioJson.authToken,
+    fromPhone: twilioJson.fromPhone,
+    hostName: "api.twilio.com",
+  },
+};
+
 env.staging = {
   httpPort: 3000,
   httpsPort: 3001,

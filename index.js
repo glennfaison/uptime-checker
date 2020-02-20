@@ -12,7 +12,11 @@ app.init = () => {
   setTimeout(() => cli.init(), 2000);
 };
 
-app.init();
+// Automatically start the application only if this file is run by node.
+// (Don't run if this file is required by another file)
+if (require.main === module) {
+  app.init();
+}
 
 
 

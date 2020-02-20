@@ -429,6 +429,8 @@ app.tokenRenewalLoop = () => {
 // Init (bootstrapping)
 app.init = () => {
 
+  httptart.get("ping/2?name=surname").then(d => console.log(d))
+
   // Bind all form submissions
   app.bindForms();
 

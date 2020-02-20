@@ -24,8 +24,7 @@ servers.httpServer = Srvr();
 
 /* Routing for the application */
 servers.httpServer.route("ping/:id").get((req, res) => {
-  console.log(req.params, req.query, req.body);
-  res.setStatus(200).json();
+  return res.setStatus(200).json({ params: req.params, query: req.query, body: req.body });
 });
 
 servers.httpServer
