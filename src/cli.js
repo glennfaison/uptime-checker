@@ -170,7 +170,7 @@ cli.commands.moreUserInfo = async (str) => {
   var userId = typeof (arr[1]) == 'string' && arr[1].trim().length > 0 ? arr[1].trim() : false;
   if (!userId) { return; }
   // Lookup the user
-  const userData = await db.read('users', userId).catch(); // catch any error and do nothing
+  const userData = await db.read('users', userId).catch(e => {}); // catch any error and do nothing
   if (!userData) { return; }
 
   // Remove the hashed password
@@ -185,7 +185,7 @@ cli.commands.moreUserInfo = async (str) => {
 
 // List Checks
 cli.commands.listChecks = async (str) => {
-  let checkIds = await db.list('checks').catch();
+  let checkIds = await db.list('checks').catch(e => {});
   if (!checkIds || checkIds.length <= 0) { return; }
   cli.verticalSpace();
   checkIds.forEach(async (checkId) => {
@@ -213,7 +213,7 @@ cli.commands.moreCheckInfo = async (str) => {
   var checkId = typeof (arr[1]) == 'string' && arr[1].trim().length > 0 ? arr[1].trim() : false;
   if (!checkId) { return; }
   // Lookup the user
-  let checkData = await db.read('checks', checkId).catch();
+  let checkData = await db.read('checks', checkId).catch(e => {});
   if (!checkData) { return; }
 
   // Print their JSON object with text highlighting
@@ -224,7 +224,7 @@ cli.commands.moreCheckInfo = async (str) => {
 
 // List Logs
 cli.commands.listLogs = async () => {
-  let logFileNames = await logger.listLogFilenames(true).catch();
+  let logFileNames = await logger.listLogFilenames(true).catch(e => {});
   if (!logFileNames || logFileNames.length <= 0) { return; }
   cli.verticalSpace();
   logFileNames.forEach((logFileName) => {
@@ -243,7 +243,7 @@ cli.commands.moreLogInfo = async (str) => {
   if (!logFileName) { return; }
   cli.verticalSpace();
   // Decompress it
-  let strData = await logger.decompressFile(logFileName).catch();
+  let strData = await logger.decompressFile(logFileName).catch(e => {});
   if (!strData) { return; }
   // Split it into lines
   var arr = strData.split('\n');

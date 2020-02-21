@@ -1,3 +1,7 @@
+const _url = require("url");
+const _dns = require("dns");
+const _util = require("util");
+
 const db = require("../db");
 const helpers = require("../helpers");
 const config = require("../config");
@@ -14,7 +18,7 @@ checkController.post = async (req, res) => {
   // Validate the inputs
   const checkData = helpers.validateCheckData({ ...req.body });
   const { protocol, url, method, successCodes, timeoutSeconds } = checkData;
-console.log(protocol, url, method, successCodes, timeoutSeconds)
+
   // Stop the function if the right inputs are not provided
   if (!protocol || !url || !method || !successCodes || !timeoutSeconds) {
     return res.setStatus(400).json({ error: `Missing or invalid required fields` });
@@ -29,6 +33,15 @@ console.log(protocol, url, method, successCodes, timeoutSeconds)
   if (userChecks.length >= config.maxChecks) {
     return res.setStatus(403).json({ error: `User already has the maximum number of checks (${config.maxChecks})` });
   }
+  // Verify that the provided url exists
+  const { hostname } = _url.parse(`${protocol}://${url}`, true);
+  const records = await _util.promisify(_dns.resolve)(hostname).catch(e => {});
+  if (!records || !records.length) {
+    return res.setStatus(400).json({
+      error: `The hostname of the URL provided(${url}) did not resolve to any DNS entries`,
+    });
+  }
+
   // Create a random id for the check
   const checkId = helpers.createRandomString(20);
   // Create a new check
@@ -62,7 +75,7 @@ checkController.get = async (req, res) => {
   const check = await db.read("checks", id)
     .catch(e => res.setStatus(404).json({ error: `Could not read check data` }));
   const tokenId = req.headers.token || null;
-  const authorized = await helpers.verifyToken(tokenId, check.userPhone).catch();
+  const authorized = await helpers.verifyToken(tokenId, check.userPhone).catch(e => {});
   if (!authorized) { return res.setStatus(403).json({ error: `Missing or invalid token` }); }
   return res.setStatus(200).json(check);
 };
@@ -87,7 +100,7 @@ checkController.put = async (req, res) => {
   const check = await db.read("checks", id)
     .catch(e => res.setStatus(400).json({ error: `check ID did not exist` }));
   const tokenId = req.headers.token || null;
-  const authorized = await helpers.verifyToken(tokenId, check.userPhone).catch();
+  const authorized = await helpers.verifyToken(tokenId, check.userPhone).catch(e => {});
   if (!authorized) { return res.setStatus(403).json({ error: `Missing or invalid token` }); }
   // Update the check where necessary
   if (protocol) { check.protocol = protocol; }

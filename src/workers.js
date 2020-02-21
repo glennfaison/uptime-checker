@@ -138,7 +138,7 @@ workers.runOneCheck = (check) => {
 workers.runAllChecks = async () => {
   // Find all checks
   let checkIds = [];
-  checkIds = await db.list("checks").catch();
+  checkIds = await db.list("checks").catch(e => {});
   if (!checkIds.length) { debuglog(`Could not find any checks to process`); }
 
   // Perform a check for each checkId
