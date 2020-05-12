@@ -1,5 +1,7 @@
 # Uptime Checker
 
+![Home Page](./public/screenshots/landing_page.jpg)
+
 This application lets users create accounts, register web resources whose availability they would like to monitor, and specify details about the requests they want to make to these resources.
 
 The application will periodically make an HTTP request to these resources, and notify the owners of the checks whenever there is a change in state with the specified resources, i.e., if the state changes from "up/accessible" to "down/inaccessible"
@@ -35,3 +37,26 @@ Through this project, I sought to demonstrate my knowledge of the Node.js API, a
 - Create a file at `./lib/twilight/twilio.config.json`, and use `./lib/twilight/twilio.config.json.example` as template. Fill in the details of your Twilio service account to enable the SMS notifications.
 - Start the project with `node .` or `node index.js`.
 - If you want to include the clustering/multithreading feature, run `node index-cluster.js`
+
+## Screens
+
+### Home
+![Home Page](./public/screenshots/landing_page.jpg)
+
+### Register
+![Registration Page](./public/screenshots/registration_page.png)
+
+### Sign In
+![Sign In Page](./public/screenshots/login_page.jpg)
+
+### Dashboard
+![Dashboard](./public/screenshots/dashboard.jpg)
+
+### Create a check
+![Create a check](./public/screenshots/create_check.png)
+
+### Update/delete a check
+![Update/delete a check](./public/screenshots/update_or_delete_check.png)
+
+### Account Settings
+![Account Settings](./public/screenshots/account_settings.png)
