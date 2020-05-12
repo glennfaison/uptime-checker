@@ -17,13 +17,13 @@ The application consists of 3 main parts:
 
 ## What did I have to do?
 
-To bring this project to fruition, I had to build the following:
-- An HTTP/HTTPS server with integrated routing functions and the ability to add plugins. It is a minimal express.js clone.
-- An Axios clone to help make HTTP requests within the application
+To bring this project to fruition, I had to build (and name 🤣) the following:
+- An HTTP/HTTPS server with integrated routing functions and the ability to add plugins. It is a minimal express.js clone, [srvr](./lib/srvr)
+- An Axios clone to help make HTTP requests within the application, [paxios](./lib/paxios)
 - A JSON, file-based data storage utility.
-- A Twilio SMS API client to notify the application’s users
+- A Twilio SMS API client to notify the application’s users, [twilight](./lib/twilight)
 - A REPL library for the CLI(used as admin panel) of the application
-- A templating engine for rendering the application’s HTML
-- A rudimentary unit testing toolkit for testing the application
+- A templating engine for rendering the application’s HTML, [templatr](./lib/templatr)
+- A rudimentary unit testing toolkit for testing the application, [litmus](./lib/litmus)
 
 Through this project, I sought to demonstrate my knowledge of the Node.js API, along with my problem-solving skills with low-level Node.js.
