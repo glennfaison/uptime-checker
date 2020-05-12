@@ -2,7 +2,7 @@
 
 This application lets users create accounts, register web resources whose availability they would like to monitor, and specify details about the requests they want to make to these resources.
 
-The application will periodically make an HTTP request to these resources, and notify the owners of the checks whenever there is a change in state with the specified resources, i.e., if the state changes from “up/accessible” to “down/inaccessible”
+The application will periodically make an HTTP request to these resources, and notify the owners of the checks whenever there is a change in state with the specified resources, i.e., if the state changes from "up/accessible" to "down/inaccessible"
 
 ## Motivation
 
@@ -27,3 +27,11 @@ To bring this project to fruition, I had to build (and name 🤣) the following:
 - A rudimentary unit testing toolkit for testing the application, [litmus](./lib/litmus)
 
 Through this project, I sought to demonstrate my knowledge of the Node.js API, along with my problem-solving skills with low-level Node.js.
+
+## Run the project
+
+- Clone this project, e.g., `git clone https://github.com/glennfaison/uptime-checker`
+- Open the project directory in your terminal, e.g., `cd uptime-checker`
+- Create a file at `./lib/twilight/twilio.config.json`, and use `./lib/twilight/twilio.config.json.example` as template. Fill in the details of your Twilio service account to enable the SMS notifications.
+- Start the project with `node .` or `node index.js`.
+- If you want to include the clustering/multithreading feature, run `node index-cluster.js`

@@ -1,0 +1,5 @@
+{
+  "accountSid": "Your account SID",
+  "authToken": "Your Auth Token",
+  "fromPhone": "Your phone number, in MSISDN format"
+}
