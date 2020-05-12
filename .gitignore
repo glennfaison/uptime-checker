@@ -9,3 +9,6 @@
 .logs/**
 **.log
 **.gz.b64
+
+# System files
+**/.DS_Store
