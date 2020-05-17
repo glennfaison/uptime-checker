@@ -1,4 +1,5 @@
 # Uptime Checker
+[![Run on Repl.it](https://repl.it/badge/github/glennfaison/uptime-checker)](https://repl.it/github/glennfaison/uptime-checker)
 
 ![Home Page](./public/screenshots/landing_page.jpg)
 
