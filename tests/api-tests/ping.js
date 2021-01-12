@@ -10,7 +10,7 @@ litmus.testThat(
   async (failureHandler, successHandler) => {
     try {
       let res = await paxios.get("http://localhost:3000/ping/2?sender=paxios", {name:"glenn"}, {text:"lorem ipsum"});
-      assert.equal(res.statusCode, 200);
+      assert.strictEqual(res.statusCode, 200);
     } catch (e) {
       failureHandler(e);
       return;

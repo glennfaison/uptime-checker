@@ -91,11 +91,9 @@ cli.commands.help = () => {
   // Show each command, followed by its explanation, in white and yellow respectively
   for (var key in commands) {
     var value = commands[key].description;
-    var line = '      \x1b[33m ' + key + '      \x1b[0m';
+    var line = `      \x1b[33m ${key}      \x1b[0m`;
     var padding = 60 - line.length;
-    for (i = 0; i < padding; i++) {
-      line += ' ';
-    }
+    line += new Array(padding).fill(' ').join('');
     line += value;
     console.log(line);
     cli.verticalSpace();
@@ -130,11 +128,9 @@ cli.commands.stats = () => {
   // Log out each stat
   for (var key in stats) {
     var value = stats[key];
-    var line = '      \x1b[33m ' + key + '      \x1b[0m';
+    var line = `      \x1b[33m ${key}      \x1b[0m`;
     var padding = 60 - line.length;
-    for (i = 0; i < padding; i++) {
-      line += ' ';
-    }
+    line += new Array(padding).fill(' ').join('');
     line += value;
     console.log(line);
     cli.verticalSpace();
@@ -330,10 +326,7 @@ cli.horizontalLine = () => {
   var width = process.stdout.columns;
 
   // Put in enough dashes to go across the screen
-  var line = '';
-  for (i = 0; i < width; i++) {
-    line += '-';
-  }
+  var line = new Array(width).fill('-').join('');
   console.log(line);
 };
 
@@ -348,10 +341,7 @@ cli.centered = (str) => {
   var leftPadding = Math.floor((width - str.length) / 2);
 
   // Put in left padded spaces before the string itself
-  var line = '';
-  for (i = 0; i < leftPadding; i++) {
-    line += ' ';
-  }
+  var line = new Array(leftPadding).fill(' ').join('');
   line += str;
   console.log(line);
 };
